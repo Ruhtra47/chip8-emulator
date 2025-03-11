@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/arthur/Dev/chip8-emulator/build",
+  "command": "/usr/bin/g++  -isystem /usr/include/SDL2 -g -std=gnu++17 -o CMakeFiles/chip8-emulator.dir/src/chip8.cpp.o -c /home/arthur/Dev/chip8-emulator/src/chip8.cpp",
+  "file": "/home/arthur/Dev/chip8-emulator/src/chip8.cpp",
+  "output": "CMakeFiles/chip8-emulator.dir/src/chip8.cpp.o"
+},
+{
+  "directory": "/home/arthur/Dev/chip8-emulator/build",
+  "command": "/usr/bin/g++  -isystem /usr/include/SDL2 -g -std=gnu++17 -o CMakeFiles/chip8-emulator.dir/src/main.cpp.o -c /home/arthur/Dev/chip8-emulator/src/main.cpp",
+  "file": "/home/arthur/Dev/chip8-emulator/src/main.cpp",
+  "output": "CMakeFiles/chip8-emulator.dir/src/main.cpp.o"
+}
+]
