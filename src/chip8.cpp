@@ -30,12 +30,14 @@ unsigned char fontset[80] =
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-Chip8::Chip8()
+Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().count())
 {
     pc = START_ADDRESS;
 
     for (unsigned int i = 0; i < FONTSET_SIZE; ++i)
         memory[FONTSET_START_ADDRESS + i] = fontset[i];
+
+    randByte = std::uniform_int_distribution<uint8_t>(0, 255u);
 }
 
 void Chip8::loadGame(char const *filename)
@@ -227,7 +229,7 @@ void Chip8::OP_2NNN()
 
 void Chip8::OP_3XNN()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t n = (opcode & 0x00FFu);
 
     if (registers[Vx] == n)
@@ -238,7 +240,7 @@ void Chip8::OP_3XNN()
 
 void Chip8::OP_4XNN()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t n = (opcode & 0x00FFu);
 
     if (registers[Vx] != n)
@@ -249,8 +251,8 @@ void Chip8::OP_4XNN()
 
 void Chip8::OP_5XY0()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
-    uint8_t Vy = (opcode & 0x00F0u) >> 4;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
     if (registers[Vx] == registers[Vy])
     {
@@ -260,128 +262,169 @@ void Chip8::OP_5XY0()
 
 void Chip8::OP_6XNN()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     registers[Vx] = (opcode & 0x00FFu);
 }
 
 void Chip8::OP_7XNN()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     registers[Vx] += (opcode & 0x00FFu);
 }
 
 void Chip8::OP_8XY0()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
-    uint8_t Vy = (opcode & 0x00F0u) >> 4;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
     registers[Vx] = registers[Vy];
 }
 
 void Chip8::OP_8XY1()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
-    uint8_t Vy = (opcode & 0x00F0u) >> 4;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
     registers[Vx] |= registers[Vy];
 }
 
 void Chip8::OP_8XY2()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
-    uint8_t Vy = (opcode & 0x00F0u) >> 4;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
     registers[Vx] &= registers[Vy];
 }
 
 void Chip8::OP_8XY3()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
-    uint8_t Vy = (opcode & 0x00F0u) >> 4;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
     registers[Vx] ^= registers[Vy];
 }
 
 void Chip8::OP_8XY4()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
-    uint8_t Vy = (opcode & 0x00F0u) >> 4;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
     uint16_t s = registers[Vx] + registers[Vy];
 
     if (s > 255u)
-    {
         registers[0xF] = 1;
-    }
     else
-    {
         registers[0xF] = 0;
-    }
 
     registers[Vx] = s & 0xFFu;
 }
 
 void Chip8::OP_8XY5()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
-    uint8_t Vy = (opcode & 0x00F0u) >> 4;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+    if (registers[Vy] > registers[Vx])
+        registers[0xF] = 1;
+    else
+        registers[0xF] = 0;
+
     registers[Vx] -= registers[Vy];
 }
 
 void Chip8::OP_8XY6()
 {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    registers[0xF] = (Vx & 0x1u);
+
+    registers[Vx] >>= 1;
 }
 
 void Chip8::OP_8XY7()
 {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+    if (registers[Vx] > registers[Vy])
+        registers[0xF] = 0;
+    else
+        registers[0xF] = 1;
+
+    registers[Vx] = registers[Vy] - registers[Vx];
 }
 
 void Chip8::OP_8XYE()
 {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    registers[0xF] = (registers[Vx] & 0x80u) >> 7u;
+
+    registers[Vx] <<= 1;
 }
 
 void Chip8::OP_9XY0()
 {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+    if (registers[Vx] != registers[Vy])
+        pc += 2;
 }
 
 void Chip8::OP_ANNN()
 {
+    index = opcode & 0x0FFFu;
 }
 
 void Chip8::OP_BNNN()
 {
+    pc = registers[0] + (opcode & 0x0FFFu);
 }
 
 void Chip8::OP_CXNN()
 {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8;
+
+    registers[Vx] = randByte(randGen) & (opcode & 0x00FFu);
 }
 
 void Chip8::OP_DXYN()
 {
+    // TODO: DRAW
 }
 
 void Chip8::OP_EX9E()
 {
+    if (keypad[registers[(opcode & 0x0F00u) >> 8u]])
+        pc += 2;
 }
 
 void Chip8::OP_EXA1()
 {
+    if (!keypad[registers[(opcode & 0x0F00u) >> 8u]])
+        pc += 2;
 }
 
 void Chip8::OP_FX07()
 {
+    registers[(opcode & 0x0F00u) >> 8u] = delayTimer;
 }
 
 void Chip8::OP_FX0A()
 {
+    // seems hard
 }
 
 void Chip8::OP_FX15()
 {
+    delayTimer = registers[(opcode & 0x0F00u) >> 8u];
 }
 
 void Chip8::OP_FX18()
 {
+    soundTimer = registers[(opcode & 0x0F00u) >> 8u];
 }
 
 void Chip8::OP_FX1E()
 {
+    index += registers[(opcode & 0x0F00u) >> 8u];
 }
 
 void Chip8::OP_FX29()
@@ -394,8 +437,16 @@ void Chip8::OP_FX33()
 
 void Chip8::OP_FX55()
 {
+    for (uint8_t i = 0; i <= (opcode & 0x0F00u) >> 8u; ++i)
+    {
+        memory[index + i] = registers[i];
+    }
 }
 
 void Chip8::OP_FX65()
 {
+    for (uint8_t i = 0; i <= (opcode & 0x0F00u) >> 8u; ++i)
+    {
+        registers[i] = memory[index + i];
+    }
 }
