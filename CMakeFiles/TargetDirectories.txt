@@ -1,3 +1,0 @@
-/home/arthur/Dev/chip8-emulator/CMakeFiles/chip8-emulator.dir
-/home/arthur/Dev/chip8-emulator/CMakeFiles/edit_cache.dir
-/home/arthur/Dev/chip8-emulator/CMakeFiles/rebuild_cache.dir
