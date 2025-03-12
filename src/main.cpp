@@ -9,7 +9,7 @@ int main()
     // iniciar janela
 
     // inicializa chip8
-    chip8.initialize();
+
     // carregar o jogo
 
     for (;;)

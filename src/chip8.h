@@ -11,7 +11,7 @@
 
 class Chip8
 {
-public:
+private:
     uint8_t registers[16]{};
     uint8_t memory[4096]{};
     uint16_t index{};
@@ -21,12 +21,13 @@ public:
     uint8_t delayTimer{};
     uint8_t soundTimer{};
     uint8_t keypad[16]{};
-    uint32_t video[64 * 32]{};
+    uint8_t video[8 * 32]{};
     uint16_t opcode;
 
     std::default_random_engine randGen;
     std::uniform_int_distribution<uint8_t> randByte;
 
+public:
     Chip8();
     void loadGame(char const *filename);
     void emulateCycle();

@@ -380,14 +380,18 @@ void Chip8::OP_BNNN()
 
 void Chip8::OP_CXNN()
 {
-    uint8_t Vx = (opcode & 0x0F00u) >> 8;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 
     registers[Vx] = randByte(randGen) & (opcode & 0x00FFu);
 }
 
 void Chip8::OP_DXYN()
 {
-    // TODO: DRAW
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+    uint8_t N = (opcode & 0x000Fu);
+
+    uint8_t startByte = registers[Vx] / 8 + 1;
 }
 
 void Chip8::OP_EX9E()
@@ -429,6 +433,9 @@ void Chip8::OP_FX1E()
 
 void Chip8::OP_FX29()
 {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    index = FONTSET_START_ADDRESS + (5 * registers[Vx]);
 }
 
 void Chip8::OP_FX33()
