@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <random>
+#include <bitset>
 
 /*
 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
@@ -20,8 +21,6 @@ private:
     uint8_t sp{};
     uint8_t delayTimer{};
     uint8_t soundTimer{};
-    uint8_t keypad[16]{};
-    uint8_t video[8 * 32]{};
     uint16_t opcode;
 
     std::default_random_engine randGen;
@@ -66,4 +65,7 @@ public:
     void OP_FX33();
     void OP_FX55();
     void OP_FX65();
+
+    std::bitset<64 * 32> video;
+    uint8_t keypad[16]{};
 };

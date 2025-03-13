@@ -10,7 +10,7 @@ file(GLOB source_files "${source_dir}/*.cpp")
 
 find_package(SDL2 REQUIRED)
 include_directories(
-    #chip8-emulator
+    # chip8-emulator
     ${SDL2_INCLUDE_DIRS})
 
 add_executable(chip8-emulator ${source_files})

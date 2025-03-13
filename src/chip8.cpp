@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cstdint>
 #include <chrono>
+#include <iostream>
 #include <random>
 
 #include "chip8.h"
@@ -9,6 +10,9 @@
 const unsigned int FONTSET_SIZE = 80;
 const unsigned int FONTSET_START_ADDRESS = 0x50;
 const unsigned int START_ADDRESS = 0x200;
+
+const unsigned int VIDEO_WIDTH = 64;
+const unsigned int VIDEO_HEIGHT = 32;
 
 unsigned char fontset[80] =
     {
@@ -63,7 +67,8 @@ void Chip8::loadGame(char const *filename)
 
 void Chip8::emulateCycle()
 {
-    opcode = memory[pc] << 8 | memory[pc + 1];
+    opcode = (memory[pc] << 8u) | memory[pc + 1];
+    std::cout << opcode << std::endl;
 
     pc += 2;
 
@@ -71,15 +76,15 @@ void Chip8::emulateCycle()
     // TODO: Implementar ponteiro de função (parece ser melhor).
     // Vou escrever uma função para cada opcode para facilitar essa mudança.
 
-    switch (opcode & 0xF000)
+    switch (opcode & 0xF000u)
     {
-    case 0x0000:
-        switch (opcode & 0x00FF)
+    case 0x0000u:
+        switch (opcode & 0x00FFu)
         {
-        case 0x00E0:
+        case 0x00E0u:
             OP_00E0();
             break;
-        case 0x00EE:
+        case 0x00EEu:
             OP_00EE();
             break;
         }
@@ -206,7 +211,7 @@ void Chip8::emulateCycle()
 
 void Chip8::OP_00E0()
 {
-    memset(video, 0, sizeof(video));
+    video.reset();
 }
 
 void Chip8::OP_00EE()
@@ -391,7 +396,29 @@ void Chip8::OP_DXYN()
     uint8_t Vy = (opcode & 0x00F0u) >> 4u;
     uint8_t N = (opcode & 0x000Fu);
 
-    uint8_t startByte = registers[Vx] / 8 + 1;
+    for (uint8_t r = 0; r < N; ++r)
+    {
+        if (registers[Vy] + r >= 32)
+            break;
+
+        uint8_t spriteByte = memory[index + r];
+
+        for (uint8_t c = 0; c < 8; ++c)
+        {
+            if (registers[Vx] + c >= 64)
+                break;
+
+            bool spritePixel = (spriteByte >> (7 - c)) & 1;
+            size_t i = (registers[Vy] + r) * 64 + (registers[Vx] + c);
+
+            if (spritePixel)
+            {
+                if (video[i])
+                    registers[0xF] = 1;
+                video.flip(i);
+            }
+        }
+    }
 }
 
 void Chip8::OP_EX9E()
@@ -413,7 +440,42 @@ void Chip8::OP_FX07()
 
 void Chip8::OP_FX0A()
 {
-    // seems hard
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    if (keypad[0])
+        registers[Vx] = 0;
+    else if (keypad[1])
+        registers[Vx] = 1;
+    else if (keypad[2])
+        registers[Vx] = 2;
+    else if (keypad[3])
+        registers[Vx] = 3;
+    else if (keypad[4])
+        registers[Vx] = 4;
+    else if (keypad[5])
+        registers[Vx] = 5;
+    else if (keypad[6])
+        registers[Vx] = 6;
+    else if (keypad[7])
+        registers[Vx] = 7;
+    else if (keypad[8])
+        registers[Vx] = 8;
+    else if (keypad[9])
+        registers[Vx] = 9;
+    else if (keypad[10])
+        registers[Vx] = 10;
+    else if (keypad[11])
+        registers[Vx] = 11;
+    else if (keypad[12])
+        registers[Vx] = 12;
+    else if (keypad[13])
+        registers[Vx] = 13;
+    else if (keypad[14])
+        registers[Vx] = 14;
+    else if (keypad[15])
+        registers[Vx] = 15;
+    else
+        pc -= 2;
 }
 
 void Chip8::OP_FX15()
@@ -440,6 +502,16 @@ void Chip8::OP_FX29()
 
 void Chip8::OP_FX33()
 {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t value = registers[Vx];
+
+    memory[index + 2] = value % 10;
+    value /= 10;
+
+    memory[index + 1] = value % 10;
+    value /= 10;
+
+    memory[index] = value % 10;
 }
 
 void Chip8::OP_FX55()

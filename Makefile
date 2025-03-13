@@ -129,6 +129,30 @@ chip8-emulator/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/build
 .PHONY : chip8-emulator/fast
 
+src/chip8.o: src/chip8.cpp.o
+.PHONY : src/chip8.o
+
+# target to build an object file
+src/chip8.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/src/chip8.cpp.o
+.PHONY : src/chip8.cpp.o
+
+src/chip8.i: src/chip8.cpp.i
+.PHONY : src/chip8.i
+
+# target to preprocess a source file
+src/chip8.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/src/chip8.cpp.i
+.PHONY : src/chip8.cpp.i
+
+src/chip8.s: src/chip8.cpp.s
+.PHONY : src/chip8.s
+
+# target to generate assembly for a file
+src/chip8.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/src/chip8.cpp.s
+.PHONY : src/chip8.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -153,6 +177,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/window.o: src/window.cpp.o
+.PHONY : src/window.o
+
+# target to build an object file
+src/window.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/src/window.cpp.o
+.PHONY : src/window.cpp.o
+
+src/window.i: src/window.cpp.i
+.PHONY : src/window.i
+
+# target to preprocess a source file
+src/window.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/src/window.cpp.i
+.PHONY : src/window.cpp.i
+
+src/window.s: src/window.cpp.s
+.PHONY : src/window.s
+
+# target to generate assembly for a file
+src/window.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chip8-emulator.dir/build.make CMakeFiles/chip8-emulator.dir/src/window.cpp.s
+.PHONY : src/window.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -162,9 +210,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... chip8-emulator"
+	@echo "... src/chip8.o"
+	@echo "... src/chip8.i"
+	@echo "... src/chip8.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/window.o"
+	@echo "... src/window.i"
+	@echo "... src/window.s"
 .PHONY : help
 
 
