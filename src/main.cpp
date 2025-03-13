@@ -5,19 +5,15 @@
 #include "chip8.h"
 #include "window.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    // if (argc != 2)
-    // {
-    //     std::cerr << "Usage: " << argv[0] << " <ROM>\n";
-    //     std::exit(EXIT_FAILURE);
-    // }
+    if (argc != 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <ROM>\n";
+        std::exit(EXIT_FAILURE);
+    }
 
-    // char const *romFileName = argv[1];
-
-    std::string temp;
-    std::cin >> temp;
-    const char *romFileName = temp.c_str();
+    char const *romFileName = argv[1];
 
     Window window("Chip8 Emulator");
 
