@@ -1,16 +1,33 @@
 #include <SDL2/SDL.h>
+#include <iostream>
 
 #include "window.h"
 
-Window::Window(char const *title)
+Window::Window(char const *title, int windowWidth, int windowHeight, int textureWidth, int textureHeight)
 {
     SDL_Init(SDL_INIT_VIDEO);
 
     window = SDL_CreateWindow(
         title,
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        WINDOW_WIDTH, WINDOW_HEIGHT,
+        windowWidth, windowHeight,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer)
+    {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+    }
+
+    texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        textureWidth, textureHeight);
+    if (!texture)
+    {
+        std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
+    }
 }
 
 Window::~Window()
@@ -21,25 +38,11 @@ Window::~Window()
     SDL_Quit();
 }
 
-void Window::cycle(const std::bitset<CHIP8_WIDTH * CHIP8_HEIGHT> *display)
+void Window::cycle(void const *buffer, int pitch)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
+    SDL_UpdateTexture(texture, nullptr, buffer, pitch);
     SDL_RenderClear(renderer);
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White pixels
-
-    for (int y = 0; y < CHIP8_HEIGHT; ++y)
-    {
-        for (int x = 0; x < CHIP8_WIDTH; ++x)
-        {
-            if (&display[y * CHIP8_WIDTH + x])
-            {
-                SDL_Rect rect = {x * SCALE, y * SCALE, SCALE, SCALE};
-                SDL_RenderFillRect(renderer, &rect);
-            }
-        }
-    }
-
+    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
 }
 

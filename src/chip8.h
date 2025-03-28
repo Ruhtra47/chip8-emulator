@@ -10,14 +10,25 @@
 0x200-0xFFF - Program ROM and work RAM
 */
 
+const unsigned int KEY_COUNT = 16;
+const unsigned int MEMORY_SIZE = 4096;
+const unsigned int REGISTER_COUNT = 16;
+const unsigned int STACK_LEVELS = 16;
+const unsigned int FONTSET_SIZE = 80;
+const unsigned int FONTSET_START_ADDRESS = 0x50;
+const unsigned int START_ADDRESS = 0x200;
+
+const unsigned int VIDEO_WIDTH = 64;
+const unsigned int VIDEO_HEIGHT = 32;
+
 class Chip8
 {
 private:
-    uint8_t registers[16]{};
-    uint8_t memory[4096]{};
+    uint8_t registers[REGISTER_COUNT]{};
+    uint8_t memory[MEMORY_SIZE]{};
     uint16_t index{};
     uint16_t pc{};
-    uint16_t stack[16]{};
+    uint16_t stack[STACK_LEVELS]{};
     uint8_t sp{};
     uint8_t delayTimer{};
     uint8_t soundTimer{};
@@ -66,6 +77,6 @@ public:
     void OP_FX55();
     void OP_FX65();
 
-    std::bitset<64 * 32> video;
-    uint8_t keypad[16]{};
+    uint32_t video[VIDEO_WIDTH * VIDEO_HEIGHT]{};
+    uint8_t keypad[KEY_COUNT]{};
 };

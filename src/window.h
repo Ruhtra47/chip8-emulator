@@ -12,14 +12,13 @@ const int WINDOW_HEIGHT = CHIP8_HEIGHT * SCALE;
 class Window
 {
 public:
-    Window(char const *title);
+    Window(char const *title, int windowWidth, int windowHeight, int textureWidth, int textureHeight);
     ~Window();
-    void cycle(const std::bitset<CHIP8_WIDTH * CHIP8_HEIGHT> *display);
+    void cycle(void const *buffer, int pitch);
     bool processInput(uint8_t *keys);
 
 private:
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *texture;
-    std::bitset<CHIP8_WIDTH * CHIP8_HEIGHT> display;
 };
