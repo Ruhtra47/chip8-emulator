@@ -3,3 +3,4 @@ CMakeFiles/
 chip8-emulator
 *.rom
 *.ch8
+.vscode/
